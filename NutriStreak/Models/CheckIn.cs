@@ -1,4 +1,5 @@
-
+using Microsoft.EntityFrameworkCore;
+using NutriStreak.Data;
 namespace NutriStreak.Models;
 
 public class CheckIn
@@ -50,5 +51,35 @@ public class CheckIn
         );
 
         Console.WriteLine($"Pontos recebidos: {Pontos}");
+    }
+    public static async Task<bool> JaFezHoje(int usuarioId)
+    {
+        await using var db = new AppDbContext();
+        DateTime hoje = DateTime.Today;
+        return await db.CheckIns.AnyAsync(c => c.UsuarioId == usuarioId
+            && c.DataCheckIn >= hoje && c.DataCheckIn < hoje.AddDays(1));
+    }
+
+    public static async Task<CheckIn?> RegistrarHoje(int usuarioId, bool agua, bool frutas, bool evitou)
+    {
+        if (await JaFezHoje(usuarioId)) return null;
+
+        await using var db = new AppDbContext();
+        var checkIn = new CheckIn
+        {
+            UsuarioId = usuarioId,
+            DataCheckIn = DateTime.Now,
+            Agua = agua,
+            FrutasVerduras = frutas,
+            EvitouUltraprocessados = evitou
+        };
+        checkIn.Pontos = checkIn.CalcularPontos();
+        db.CheckIns.Add(checkIn);
+
+        var usuario = await db.Usuarios.FindAsync(usuarioId);
+        usuario!.RegistrarAtividade(checkIn.Pontos);
+
+        await db.SaveChangesAsync();
+        return checkIn;
     }
 }

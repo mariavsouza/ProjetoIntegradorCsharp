@@ -12,14 +12,12 @@ public class Usuario
     public int Pontos { get; set; }
     public int Sequencia { get; set; }
     public DateTime? UltimoRegistro { get; set; }
-
-    // Soma pontos e atualiza a sequência de dias seguidos
     public void RegistrarAtividade(int pontos)
     {
         Pontos += pontos;
         DateTime hoje = DateTime.Today;
 
-        if (UltimoRegistro?.Date == hoje) return; // já contou hoje
+        if (UltimoRegistro?.Date == hoje) return; 
 
         Sequencia = (UltimoRegistro?.Date == hoje.AddDays(-1)) ? Sequencia + 1 : 1;
         UltimoRegistro = hoje;
