@@ -19,10 +19,33 @@ public class AppDbContext : DbContext
             password=Senac2026;");
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Usuario>().Property(u => u.Email).HasMaxLength(150);
-        modelBuilder.Entity<Usuario>().HasIndex(u => u.Email).IsUnique();
-    }
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    base.OnModelCreating(modelBuilder);
+
+    modelBuilder.Entity<Usuario>()
+        .Property(u => u.Email)
+        .HasMaxLength(150)
+        .IsRequired();
+
+    modelBuilder.Entity<Usuario>()
+        .HasIndex(u => u.Email)
+        .IsUnique();
+
+    modelBuilder.Entity<Refeicao>()
+        .HasOne(r => r.Usuario)
+        .WithMany()
+        .HasForeignKey(r => r.UsuarioId);
+
+    modelBuilder.Entity<CheckIn>()
+        .HasOne(c => c.Usuario)
+        .WithMany()
+        .HasForeignKey(c => c.UsuarioId);
+
+    modelBuilder.Entity<Planejamento>()
+        .HasOne(p => p.Usuario)
+        .WithMany()
+        .HasForeignKey(p => p.UsuarioId);
 }
 
+}

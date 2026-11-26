@@ -7,29 +7,40 @@ public class Refeicao
 {
     public int Id { get; set; }
     public int UsuarioId { get; set; }
+    public Usuario Usuario { get; set; } = null!;
     public string Alimentos { get; set; } = string.Empty;
     public string Avaliacao { get; set; } = string.Empty;
     public DateTime DataRefeicao { get; set; }
 
     public static async Task<Refeicao> Cadastrar(
-        int usuarioId,
-        List<Alimento> escolhidos)
+    int usuarioId,
+    List<Alimento> escolhidos)
+{
+    await using var db = new AppDbContext();
+
+    // Verifica se o usuário existe
+    var usuarioExiste = await db.Usuarios
+        .AnyAsync(u => u.Id == usuarioId);
+
+    if (!usuarioExiste)
+        throw new Exception("Usuário não encontrado!");
+
+    if (escolhidos == null || escolhidos.Count == 0)
+        throw new Exception("Selecione pelo menos um alimento!");
+
+    var refeicao = new Refeicao
     {
-        await using var db = new AppDbContext();
+        UsuarioId = usuarioId,
+        Alimentos = string.Join(", ", escolhidos.Select(a => a.Nome)),
+        Avaliacao = AvaliadorPrato.Avaliar(escolhidos),
+        DataRefeicao = DateTime.Now
+    };
 
-        var refeicao = new Refeicao
-        {
-            UsuarioId = usuarioId,
-            Alimentos = string.Join(", ", escolhidos.Select(a => a.Nome)),
-            Avaliacao = AvaliadorPrato.Avaliar(escolhidos),
-            DataRefeicao = DateTime.Now
-        };
+    db.Refeicoes.Add(refeicao);
+    await db.SaveChangesAsync();
 
-        db.Refeicoes.Add(refeicao);
-        await db.SaveChangesAsync();
-
-        return refeicao;
-    }
+    return refeicao;
+}
 
     public static async Task<List<Refeicao>> Listar(int usuarioId)
     {

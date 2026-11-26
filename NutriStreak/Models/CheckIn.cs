@@ -5,15 +5,11 @@ namespace NutriStreak.Models;
 public class CheckIn
 {
     public int Id { get; set; } 
-
     public int UsuarioId { get; set; } 
-
+    public Usuario Usuario { get; set; } = new Usuario();
     public DateTime DataCheckIn { get; set; }
-
-    public bool Agua { get; set; } 
-
+    public bool Agua { get; set; }
     public bool FrutasVerduras { get; set;} 
-
     public bool EvitouUltraprocessados { get; set; } 
 
     public int Pontos { get; set; }

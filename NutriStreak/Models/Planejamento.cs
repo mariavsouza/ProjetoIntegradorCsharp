@@ -7,6 +7,8 @@ public class Planejamento
 
     public int UsuarioId { get; set; }
 
+    public Usuario Usuario { get; set; } = new Usuario();
+
     public DateTime DataRefeicao { get; set; }
 
     public string TipoRefeicao { get; set; } = "";

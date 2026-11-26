@@ -45,6 +45,8 @@ namespace NutriStreak.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UsuarioId");
+
                     b.ToTable("CheckIns");
                 });
 
@@ -70,6 +72,8 @@ namespace NutriStreak.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UsuarioId");
+
                     b.ToTable("Planejamentos");
                 });
 
@@ -94,6 +98,8 @@ namespace NutriStreak.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Refeicoes");
                 });
@@ -132,6 +138,39 @@ namespace NutriStreak.Migrations
                         .IsUnique();
 
                     b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("NutriStreak.Models.CheckIn", b =>
+                {
+                    b.HasOne("NutriStreak.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("NutriStreak.Models.Planejamento", b =>
+                {
+                    b.HasOne("NutriStreak.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("NutriStreak.Models.Refeicao", b =>
+                {
+                    b.HasOne("NutriStreak.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 #pragma warning restore 612, 618
         }
